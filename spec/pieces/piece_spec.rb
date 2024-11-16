@@ -1,4 +1,4 @@
-require_relative '../../lib/pieces/load_pieces'
+require_relative '../../loader'
 
 describe Piece do
   subject(:piece) { described_class.new }
