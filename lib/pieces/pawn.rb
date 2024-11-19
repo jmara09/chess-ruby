@@ -8,6 +8,30 @@ class Pawn < Piece
     super(notation, player, symbol)
   end
 
+  def check_diagonal(board, player)
+    coord = convert_notation
+    deltas_diagonal = [[-1, -1], [-1, +1]]
+    deltas = []
+
+    deltas_diagonal.each do |delta|
+      diagonal_coord = [
+        delta[0] + coord[0],
+        delta[1] + coord[1]
+      ]
+
+      next unless diagonal_coord[0].between?(0, board.size - 1) &&
+                  diagonal_coord[1].between?(0, board[0].size - 1)
+
+      piece = board[diagonal_coord[0]][diagonal_coord[1]][:piece]
+
+      next if piece.nil? || piece.player == player
+
+      deltas << delta
+    end
+
+    deltas
+  end
+
   def deltas
     squares = []
     squares << [-1, 0]
