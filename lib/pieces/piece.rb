@@ -10,6 +10,8 @@ class Piece
   end
 
   def convert_notation(position = notation)
+    return puts 'Error input. Position is nil' if position.nil?
+
     col = position.chars.first
     row = position.chars.last.to_i
     unless position.chars.length == 2 && (col.between?('a', 'h') && row.between?(0, 7))
@@ -32,9 +34,14 @@ class Piece
     current_position = convert_notation
     squares = []
     deltas.each do |delta|
-      square = Array.new(2, nil)
-      square[0] = delta[0] + current_position[0]
-      square[1] = delta[1] + current_position[1]
+      square = [
+        delta[0] + current_position[0],
+        delta[1] + current_position[1]
+      ]
+
+      next unless square[0].between?(0, 7) &&
+                  square[1].between?(0, 7)
+
       squares << square
     end
     squares
