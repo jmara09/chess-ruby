@@ -32,13 +32,20 @@ class Pawn < Piece
     deltas
   end
 
-  def deltas
+  def deltas(board, player = @player)
     squares = []
+    deltas = check_diagonal(board, player)
+    unless deltas.empty?
+      deltas.each do |delta|
+        squares << delta
+      end
+    end
     squares << [-1, 0]
     squares << [-2, 0] if moved == false
     squares
   end
 
-  def available_squares
+  def available_squares(offsets = deltas)
+    super
   end
 end

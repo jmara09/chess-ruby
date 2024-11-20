@@ -125,4 +125,12 @@ describe Pawn do
       end
     end
   end
+
+  describe '#available_squares' do
+    context 'if the deltas received are [1, 0] and [2, 0]' do
+      before do
+      end
+      xit 'returns a square directly ahead and two squares ahead'
+    end
+  end
 end
