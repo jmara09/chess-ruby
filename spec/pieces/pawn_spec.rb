@@ -2,9 +2,9 @@ require_relative '../../loader'
 
 describe Pawn do
   subject(:pawn) { described_class.new }
-  describe '#check_diagonal' do
-    let(:chess_board) { Array.new(3) { Array.new(3) { { piece: nil } } } }
+  let(:chess_board) { Array.new(3) { Array.new(3) { { piece: nil } } } }
 
+  describe '#check_diagonal' do
     context 'if there is an opponent positioned diagonally' do
       let(:opponent_pawn) { instance_double(Pawn) }
 
@@ -73,21 +73,54 @@ describe Pawn do
   end
 
   describe '#deltas' do
+    before do
+      allow(pawn).to receive(:convert_notation).and_return([2, 1])
+    end
+
     context 'if moved is false' do
       it 'returns a delta used to move two squares forward' do
         two_squares_ahead = [-2, 0]
-        result = pawn.deltas
+        result = pawn.deltas(chess_board, pawn.player)
         expect(result).to include(two_squares_ahead)
       end
     end
 
-    # finish check diagonal method first
-    context 'if there is an opponent positioned diagonally' do
-      context 'when the opponent is on the square located to the left diagonal' do
-        xit 'returns a delta one square diagonally to the left' do
-          left_diagonal_delta = [-1, -1]
-          deltas = pawn.deltas
-          expect(deltas).to include(left_diagonal_delta)
+    context 'if the return value of #check_diagonal is not empty' do
+      context 'when there is two deltas returned' do
+        before do
+          allow(pawn).to receive(:check_diagonal).and_return([[-1, -1], [-1, 1]])
+        end
+
+        it 'will be included in the return value' do
+          left_diagonal = [-1, -1]
+          right_diagonal = [-1, 1]
+          result = pawn.deltas(chess_board, pawn.player)
+          expect(result).to include(left_diagonal).and include(right_diagonal)
+        end
+      end
+
+      context 'when only one is returned' do
+        before do
+          allow(pawn).to receive(:check_diagonal).and_return([[-1, -1], [-1, 1]])
+        end
+
+        it 'will be included in the return value' do
+          left_diagonal = [-1, -1]
+          result = pawn.deltas(chess_board, pawn.player)
+          expect(result).to include(left_diagonal)
+        end
+      end
+
+      context 'when there is no return value from #check_diagonal' do
+        before do
+          allow(pawn).to receive(:check_diagonal).and_return([])
+        end
+
+        it 'is not included in the return value' do
+          left_diagonal = [-1, -1]
+          right_diagonal = [-1, 1]
+          result = pawn.deltas(chess_board, pawn.player)
+          expect(result).not_to include(left_diagonal, right_diagonal)
         end
       end
     end
