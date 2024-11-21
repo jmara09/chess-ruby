@@ -2,6 +2,8 @@ require_relative '../../loader'
 
 describe Piece do
   subject(:piece) { described_class.new }
+  let(:chess_board) { ChessBoard.new }
+
   describe '#convert_notation' do
     context 'when a valid position is received' do
       before do
@@ -55,10 +57,21 @@ describe Piece do
       end
 
       it 'returns a square one row ahead' do
-        deltas = pawn.deltas
+        deltas = pawn.deltas(chess_board)
         square_ahead = [5, 0]
         result = piece.available_squares(deltas)
         expect(result).to include(square_ahead)
+      end
+
+      context 'when the piece is already on the last row' do
+        before do
+          allow(piece).to receive(:convert_notation).and_return([0, 1])
+        end
+        it 'returns an empty value' do
+          delta = [[-1, 0]]
+          result = piece.available_squares(delta)
+          expect(result).to be_empty
+        end
       end
     end
   end
