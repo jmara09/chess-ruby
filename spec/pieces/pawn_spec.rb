@@ -127,10 +127,29 @@ describe Pawn do
   end
 
   describe '#available_squares' do
-    context 'if the deltas received are [1, 0] and [2, 0]' do
-      before do
+    before do
+      middle_bottom = [2, 1]
+      allow(pawn).to receive(:convert_notation).and_return(middle_bottom)
+    end
+
+    context 'if the deltas received are [-1, 0] and [-2, 0]' do
+      it 'returns a square directly ahead and two squares ahead' do
+        deltas = [[-1, 0], [-2, 0]]
+        one_square_ahead = [1, 1]
+        two_squares_ahead = [0, 1]
+        result = pawn.available_squares(deltas)
+        expect(result).to include(one_square_ahead, two_squares_ahead)
       end
-      xit 'returns a square directly ahead and two squares ahead'
+    end
+
+    context 'if there is an enemy diagonally positioned both side' do
+      it 'returns squares where the enemy piece is positioned' do
+        enemy_deltas = [[-1, -1], [-1, 1]]
+        upper_left = [1, 0]
+        upper_right = [1, 2]
+        result = pawn.available_squares(enemy_deltas)
+        expect(result).to include(upper_left, upper_right)
+      end
     end
   end
 end
