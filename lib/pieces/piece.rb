@@ -30,19 +30,34 @@ class Piece
     raise NotImplementedError, 'Subclasses must define the method'
   end
 
-  def available_squares(deltas)
+  def check_square(delta, current_position, board, player = 1)
+    square = [
+      delta[0] + current_position[0],
+      delta[1] + current_position[1]
+    ]
+
+    return 'invalid' unless square[0].between?(0, 7) &&
+                            square[1].between?(0, 7)
+
+    piece = board[square[0]][square[1]][:piece]
+
+    return square if piece.nil? || piece.player != player
+
+    'own piece' if piece.player == player
+  end
+
+  def available_squares(delta_group, board)
     current_position = convert_notation
-    squares = []
-    deltas.each do |delta|
-      square = [
-        delta[0] + current_position[0],
-        delta[1] + current_position[1]
-      ]
+    squares = {}
+    delta_group.each do |key, deltas|
+      squares[key] = []
+      deltas.each do |delta|
+        result = check_square(delta, current_position, board)
+        next if result == 'invalid'
+        break if result == 'own piece'
 
-      next unless square[0].between?(0, 7) &&
-                  square[1].between?(0, 7)
-
-      squares << square
+        squares[key] << result
+      end
     end
     squares
   end
