@@ -9,5 +9,11 @@ class Rook
   end
 
   def deltas
+    deltas = { forward: nil, backward: nil, left: nil, right: nil }
+    deltas[:forward] = (-7..-1).to_a.product([0]).reverse
+    deltas[:backward] = (1..7).to_a.product([0])
+    deltas[:left] = [0].product((-7..-1).to_a).reverse
+    deltas[:right] = [0].product((1..7).to_a)
+    deltas
   end
 end
