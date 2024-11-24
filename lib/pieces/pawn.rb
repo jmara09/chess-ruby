@@ -8,6 +8,15 @@ class Pawn < Piece
     super(notation, player, symbol)
   end
 
+  def check_square(delta, current_position, board, player = 1)
+    result = super
+    diagonal_deltas = [[-1, -1], [-1, 1]]
+
+    result = [nil, nil] if diagonal_deltas.include?(delta) && result.first == 'empty'
+
+    result
+  end
+
   def deltas
     deltas = { forward: [[-1, 0]], upper_left: [[-1, -1]], upper_right: [[-1, 1]] }
     deltas[:forward] << [-2, 0] if moved == false
