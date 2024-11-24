@@ -2,7 +2,79 @@ require_relative '../../loader'
 
 describe Pawn do
   subject(:pawn) { described_class.new }
-  let(:chess_board) { Array.new(3) { Array.new(3) { { piece: nil } } } }
+  let(:chess_board) { ChessBoard.new.board }
+  let(:own_piece) { double('knight', player: 1) }
+  let(:enemy_piece) { double('knight', player: 2) }
+
+  describe '#check_square' do
+    let(:position) { [6, 1] }
+
+    context 'if moved is false' do
+      context 'when there is an enemy piece two squares ahead' do
+        before do
+          chess_board[4][1][:piece] = enemy_piece
+        end
+
+        it 'will return the square' do
+          two_squares_ahead = [4, 1]
+          delta = [-2, 0]
+          result = pawn.check_square(delta, position, chess_board)
+          expect(result).to include(two_squares_ahead)
+        end
+      end
+
+      context 'when your own piece is on two squares ahead' do
+        before do
+          chess_board[4][1][:piece] = own_piece
+        end
+
+        it 'will not include two squares ahead' do
+          two_squares_ahead = [4, 1]
+          delta = [-2, 0]
+          result = pawn.check_square(delta, position, chess_board)
+          expect(result).not_to include(two_squares_ahead)
+        end
+      end
+    end
+
+    context 'if the delta is diagonal and the square is empty' do
+      it 'returns nil' do
+        upper_left_delta = [-1, -1]
+        result = pawn.check_square(upper_left_delta, position, chess_board).first
+        expect(result).to be_nil
+      end
+    end
+
+    context 'if there is an enemy positioned diagonally' do
+      context 'when the enemy piece is on upper left' do
+        before do
+          chess_board[5][0][:piece] = enemy_piece
+        end
+
+        it 'returns a message and the square' do
+          upper_left_square = [5, 0]
+          message = 'enemy piece'
+          delta = [-1, -1]
+          result = pawn.check_square(delta, position, chess_board)
+          expect(result).to include(message, upper_left_square)
+        end
+      end
+
+      context 'when the enemy piece is on upper right' do
+        before do
+          chess_board[5][2][:piece] = enemy_piece
+        end
+
+        it 'returns a message and the square' do
+          upper_right_square = [5, 2]
+          message = 'enemy piece'
+          delta = [-1, 1]
+          result = pawn.check_square(delta, position, chess_board)
+          expect(result).to include(message, upper_right_square)
+        end
+      end
+    end
+  end
 
   describe '#deltas' do
     before do
