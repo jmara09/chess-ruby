@@ -1,6 +1,6 @@
 require_relative 'piece'
 
-class Rook
+class Rook < Piece
   def initialize(notation = nil, player = 1)
     white_rook = "\u2656"
     black_rook = "\u265C"

@@ -1,6 +1,6 @@
 require_relative 'piece'
 
-class Bishop
+class Bishop < Piece
   def initialize(notation = nil, player = 1)
     white_bishop = "\u2657"
     black_bishop = "\u265D"
