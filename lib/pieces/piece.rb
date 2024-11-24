@@ -63,7 +63,8 @@ class Piece
         next if result.first.nil?
         break if result.first == 'own piece'
 
-        squares[key] << result
+        squares[key] << result.last
+        break if result.first == 'enemy piece'
       end
     end
     squares
