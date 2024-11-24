@@ -31,19 +31,26 @@ class Piece
   end
 
   def check_square(delta, current_position, board, player = 1)
+    result = [nil, nil]
     square = [
       delta[0] + current_position[0],
       delta[1] + current_position[1]
     ]
 
-    return 'invalid' unless square[0].between?(0, 7) &&
-                            square[1].between?(0, 7)
+    return result unless square[0].between?(0, 7) &&
+                         square[1].between?(0, 7)
 
     piece = board[square[0]][square[1]][:piece]
 
-    return square if piece.nil? || piece.player != player
+    if piece.nil?
+      result = ['empty', square]
+    elsif piece.player != player
+      result = ['enemy piece', square]
+    elsif piece.player == player
+      result[0] = 'own piece'
+    end
 
-    'own piece' if piece.player == player
+    result
   end
 
   def available_squares(delta_group, board)
@@ -53,8 +60,8 @@ class Piece
       squares[key] = []
       deltas.each do |delta|
         result = check_square(delta, current_position, board)
-        next if result == 'invalid'
-        break if result == 'own piece'
+        next if result.first.nil?
+        break if result.first == 'own piece'
 
         squares[key] << result
       end

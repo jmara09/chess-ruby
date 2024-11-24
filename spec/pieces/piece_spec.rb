@@ -60,7 +60,7 @@ describe Piece do
         message = 'own piece'
         delta = [-1, 0]
         position = piece.convert_notation
-        result = piece.check_square(delta, position, chess_board)
+        result = piece.check_square(delta, position, chess_board).first
         expect(result).to eq(message)
       end
     end
@@ -70,16 +70,16 @@ describe Piece do
 
       before do
         chess_board[6][1][:piece] = knight
-        allow(piece).to receive(:player).and_return(1)
-        allow(piece).to receive(:convert_notation).and_return([7, 0])
+        allow(piece).to receive(:convert_notation).and_return([7, 1])
       end
 
-      it 'returns the square' do
-        square_ahead = [6, 0]
+      it 'returns a message and the square' do
+        square_ahead = [6, 1]
+        message = 'enemy piece'
         position = piece.convert_notation
         delta = [-1, 0]
         result = piece.check_square(delta, position, chess_board)
-        expect(result).to eq(square_ahead)
+        expect(result).to include(message, square_ahead)
       end
     end
 
@@ -88,12 +88,13 @@ describe Piece do
         allow(piece).to receive(:convert_notation).and_return([7, 0])
       end
 
-      it 'returns the square' do
+      it 'returns a message the square' do
         square_ahead = [6, 0]
+        message = 'empty'
         position = piece.convert_notation
         delta = [-1, 0]
         result = piece.check_square(delta, position, chess_board)
-        expect(result).to eq(square_ahead)
+        expect(result).to include(message, square_ahead)
       end
     end
   end
@@ -118,13 +119,13 @@ describe Piece do
       context 'when the piece is already on the last row' do
         before do
           allow(piece).to receive(:convert_notation).and_return([0, 1])
-          allow(piece).to receive(:check_square).and_return('invalid')
+          allow(piece).to receive(:check_square).and_return([nil, nil])
         end
 
-        it 'returns an empty value' do
+        it 'returns nil' do
           delta = { forward: [[-1, 0]] }
-          result = piece.available_squares(delta, chess_board)[:forward]
-          expect(result).to be_empty
+          result = piece.available_squares(delta, chess_board)[:forward].first
+          expect(result).to be_nil
         end
       end
     end
@@ -134,7 +135,6 @@ describe Piece do
       let(:one_square_ahead) { [1, 1] }
 
       before do
-        # one_square_ahead = [1, 1]
         allow(piece).to receive(:convert_notation).and_return([2, 1])
         allow(knight).to receive(:player).and_return(1)
         chess_board[one_square_ahead[0]][one_square_ahead[1]][:piece] = knight
