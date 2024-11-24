@@ -7,4 +7,17 @@ class King < Piece
     symbol = player == 1 ? white_king : black_king
     super(notation, player, symbol)
   end
+
+  def deltas
+    deltas = {}
+    deltas[:upper_left] = [[-1, -1]]
+    deltas[:upper_right] = [[-1, 1]]
+    deltas[:lower_left] = [[1, -1]]
+    deltas[:lower_right] = [[1, 1]]
+    deltas[:forward] = [[-1, 0]]
+    deltas[:backward] = [[1, 0]]
+    deltas[:left] = [[0, -1]]
+    deltas[:right] = [[0, 1]]
+    deltas
+  end
 end
