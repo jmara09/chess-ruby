@@ -7,4 +7,23 @@ class Knight < Piece
     symbol = player == 1 ? white_knight : black_knight
     super(notation, player, symbol)
   end
+
+  def check_square(delta, current_position, board, player = 1)
+    result = super
+    result[0] = nil if result.first == 'own piece'
+    result
+  end
+
+  def deltas
+    { around: [
+      [-2, -1],
+      [-2, 1],
+      [2, -1],
+      [2, 1],
+      [-1, -2],
+      [1, -2],
+      [-1, 2],
+      [1, 2]
+    ] }
+  end
 end
