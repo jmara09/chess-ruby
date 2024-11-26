@@ -106,13 +106,13 @@ describe Piece do
       before do
         allow(pawn).to receive(:deltas).and_return({ forward: [[-1, 0]] })
         allow(piece).to receive(:convert_notation).and_return([6, 0])
-        allow(piece).to receive(:check_square).and_return([5, 0])
+        allow(piece).to receive(:check_square).and_return(['empty', [5, 0]])
       end
 
       it 'returns a square one row ahead' do
         deltas = pawn.deltas
         square_ahead = [5, 0]
-        result = piece.available_squares(deltas, chess_board)[:forward]
+        result = piece.available_squares(deltas, chess_board)
         expect(result).to include(square_ahead)
       end
 
@@ -122,10 +122,10 @@ describe Piece do
           allow(piece).to receive(:check_square).and_return([nil, nil])
         end
 
-        it 'returns nil' do
+        it 'returns empty' do
           delta = { forward: [[-1, 0]] }
-          result = piece.available_squares(delta, chess_board)[:forward].first
-          expect(result).to be_nil
+          result = piece.available_squares(delta, chess_board)
+          expect(result).to be_empty
         end
       end
     end
@@ -142,7 +142,7 @@ describe Piece do
 
       it 'will not include that square' do
         delta = { forward: [[-1, 0]] }
-        squares = piece.available_squares(delta, chess_board)[:forward]
+        squares = piece.available_squares(delta, chess_board)
         expect(squares).not_to include(one_square_ahead)
       end
     end

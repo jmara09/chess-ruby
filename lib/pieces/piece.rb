@@ -55,15 +55,14 @@ class Piece
 
   def available_squares(delta_group, board)
     current_position = convert_notation
-    squares = {}
-    delta_group.each do |key, deltas|
-      squares[key] = []
+    squares = []
+    delta_group.each_value do |deltas|
       deltas.each do |delta|
         result = check_square(delta, current_position, board)
         next if result.first.nil?
         break if result.first == 'own piece'
 
-        squares[key] << result.last
+        squares << result.last
         break if result.first == 'enemy piece'
       end
     end
