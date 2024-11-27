@@ -6,6 +6,11 @@ class King < Piece
     black_king = "\u265A"
     symbol = player == 1 ? white_king : black_king
     super(notation, player, symbol)
+    @check = false
+  end
+
+  def check?
+    @check
   end
 
   def deltas
