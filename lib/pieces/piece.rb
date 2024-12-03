@@ -1,19 +1,11 @@
-require_relative '../position_converter'
-
 class Piece
-  include PositionConverter
-
   attr_reader :symbol
-  attr_accessor :notation, :moved, :player
+  attr_accessor :coord, :moved, :player
 
-  def initialize(notation = nil, player = 1, symbol = nil)
+  def initialize(coord = nil, player = 1, symbol = nil)
     @player = player
-    @notation = notation
+    @coord = coord
     @symbol = symbol
-  end
-
-  def to_coord(notation = @notation)
-    super
   end
 
   def deltas
@@ -44,7 +36,7 @@ class Piece
   end
 
   def available_squares(delta_group, board)
-    current_position = to_coord(notation)
+    current_position = coord
     squares = []
     delta_group.each_value do |deltas|
       deltas.each do |delta|
