@@ -1,4 +1,4 @@
-module Convertable
+module PositionConverter
   def to_coord(notation)
     return 'Invalid' if notation.nil?
 

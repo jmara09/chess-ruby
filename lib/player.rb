@@ -1,8 +1,8 @@
 require_relative 'chess_board'
-require_relative 'convertable'
+require_relative 'position_converter'
 
 class Player
-  include Convertable
+  include PositionConverter
 
   attr_reader :player, :captured
 
@@ -22,7 +22,7 @@ class Player
     start_coord = to_coord(start_pos)
     end_coord = to_coord(end_pos)
 
-    return puts 'Invalid notation' if start_coord == false || end_coord == false
+    return puts 'Invalid notation' if start_coord == 'Invalid' || end_coord == 'Invalid'
 
     start_square = chess_board.board[start_coord[0]][start_coord[1]]
     end_square = chess_board.board[end_coord[0]][end_coord[1]]
@@ -35,9 +35,10 @@ class Player
 
     @captured << end_square[:symbol] unless end_square[:piece].nil?
 
-    end_square[:piece] = start_square[:piece]
-    end_square[:piece].notation = end_square[:notation]
-    end_square[:symbol] = end_square[:piece].symbol
+    piece = start_square[:piece]
+    piece.notation = end_square[:notation]
+    end_square[:piece] = piece
+    end_square[:symbol] = piece.symbol
     start_square[:piece] = nil
     start_square[:symbol] = ''
 
@@ -45,3 +46,9 @@ class Player
     chess_board.print_board
   end
 end
+
+chess_board = ChessBoard.new
+chess_board.set_pieces
+jm = Player.new
+
+jm.move('b1', 'a3', chess_board)

@@ -77,3 +77,15 @@ class ChessBoard
     puts
   end
 end
+
+# system 'clear'
+# puts '      '.colorize(background: :magenta)
+# p String.colors
+#
+
+# chess = ChessBoard.new
+# chess.set_pieces
+# knight = chess.board[7][1][:piece]
+# deltas = knight.deltas
+# squares = knight.available_squares(deltas, chess.board)
+# chess.print_board(squares)

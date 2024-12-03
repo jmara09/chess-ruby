@@ -1,7 +1,7 @@
-require_relative '../convertable'
+require_relative '../position_converter'
 
 class Piece
-  include Convertable
+  include PositionConverter
 
   attr_reader :symbol
   attr_accessor :notation, :moved, :player

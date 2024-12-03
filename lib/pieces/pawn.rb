@@ -25,8 +25,4 @@ class Pawn < Piece
     deltas[:forward] << [-2, 0] if moved == false
     deltas
   end
-
-  def available_squares(offsets = deltas)
-    super
-  end
 end
