@@ -2,34 +2,25 @@ require 'colorize'
 require_relative 'pieces_loader'
 
 class ChessBoard
-  attr_accessor :board
+  attr_accessor :board, :white_pieces, :black_pieces
 
   def initialize
-    @board = Array.new(8) { Array.new(8) { { symbol: '', notation: nil, piece: nil } } }
-  end
-
-  def notations
-    row_length = @board.size
-
-    @board.each do |row|
-      col = 'a'
-
-      row.each do |square|
-        square[:notation] = col + row_length.to_s
-        col.next!
-      end
-
-      row_length -= 1
-    end
+    @board = Array.new(8) { Array.new(8) { '' } }
+    @white_pieces = []
+    @black_pieces = []
   end
 
   def eight_pawns(player)
     row = player == 1 ? 6 : 1
 
-    @board[row].each do |square|
-      notation = square[:notation]
-      square[:piece] = Pawn.new(notation, player)
-      square[:symbol] = square[:piece].symbol
+    @board[row].each.with_index do |_, index|
+      coord = [row, index]
+      @board[row][index] = Pawn.new(coord, player)
+      if player == 1
+        @white_pieces << @board[row][index]
+      else
+        @black_pieces << @board[row][index]
+      end
     end
   end
 
@@ -37,15 +28,18 @@ class ChessBoard
     royals = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
     row = player == 1 ? 7 : 0
 
-    @board[row].each_with_index do |square, index|
-      notation = square[:notation]
-      square[:piece] = royals[index].new(notation, player)
-      square[:symbol] = square[:piece].symbol
+    @board[row].each_with_index do |_, index|
+      coord = [row, index]
+      @board[row][index] = royals[index].new(coord, player)
+      if player == 1
+        @white_pieces << @board[row][index]
+      else
+        @black_pieces << @board[row][index]
+      end
     end
   end
 
   def set_pieces
-    notations
     2.times do |index|
       eight_pawns(index + 1)
       royalty(index + 1)
@@ -83,8 +77,9 @@ end
 # p String.colors
 #
 
-# chess = ChessBoard.new
-# chess.set_pieces
+chess = ChessBoard.new
+chess.set_pieces
+p chess.black_pieces
 # knight = chess.board[7][1][:piece]
 # deltas = knight.deltas
 # squares = knight.available_squares(deltas, chess.board)
