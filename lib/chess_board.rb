@@ -2,12 +2,14 @@ require 'colorize'
 require_relative 'pieces_loader'
 
 class ChessBoard
-  attr_accessor :board, :white_pieces, :black_pieces
+  attr_accessor :board, :white_pieces, :black_pieces, :white_king, :black_king
 
   def initialize
     @board = Array.new(8) { Array.new(8) { '' } }
     @white_pieces = []
     @black_pieces = []
+    @white_king = nil
+    @black_king = nil
   end
 
   def update_pieces
@@ -37,8 +39,10 @@ class ChessBoard
       coord = [row, index]
       @board[row][index] = royals[index].new(coord, player)
       if player == 1
+        @white_king = @board[row][index] if @board[row][index].is_a?(King)
         @white_pieces << @board[row][index]
       else
+        @black_king = @board[row][index] if @board[row][index].is_a?(King)
         @black_pieces << @board[row][index]
       end
     end
@@ -76,16 +80,3 @@ class ChessBoard
     puts
   end
 end
-
-# system 'clear'
-# puts '      '.colorize(background: :magenta)
-# p String.colors
-#
-
-chess = ChessBoard.new
-chess.set_pieces
-p chess.black_pieces
-# knight = chess.board[7][1][:piece]
-# deltas = knight.deltas
-# squares = knight.available_squares(deltas, chess.board)
-chess.print_board
