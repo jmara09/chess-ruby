@@ -1,11 +1,11 @@
 require_relative 'piece'
 
 class Knight < Piece
-  def initialize(notation = nil, player = 1)
+  def initialize(coord = nil, player = 1)
     white_knight = "\u2658"
     black_knight = "\u265E"
     symbol = player == 1 ? white_knight : black_knight
-    super(notation, player, symbol)
+    super(coord, player, symbol)
   end
 
   def check_square(delta, current_position, board, player = 1)

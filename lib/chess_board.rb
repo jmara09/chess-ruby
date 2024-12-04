@@ -46,7 +46,7 @@ class ChessBoard
     end
   end
 
-  def print_board(moves = [])
+  def print_board
     length = @board.length
     colors = %i[white black]
 
@@ -56,10 +56,10 @@ class ChessBoard
       current_color = start_color
 
       row.each_with_index do |square, col_index|
-        line << if moves.include?([row_index, col_index])
-                  "#{square[:symbol].center(6).colorize(background: :yellow)}"
+        line << if square == ''
+                  square.center(6).colorize(background: current_color)
                 else
-                  "#{square[:symbol].center(6).colorize(background: current_color)}"
+                  "#{square.symbol.center(6).colorize(background: current_color)}"
                 end
         current_color = current_color == colors[0] ? colors[1] : colors[0]
       end
@@ -71,16 +71,3 @@ class ChessBoard
     puts
   end
 end
-
-# system 'clear'
-# puts '      '.colorize(background: :magenta)
-# p String.colors
-#
-
-chess = ChessBoard.new
-chess.set_pieces
-p chess.black_pieces
-# knight = chess.board[7][1][:piece]
-# deltas = knight.deltas
-# squares = knight.available_squares(deltas, chess.board)
-# chess.print_board(squares)

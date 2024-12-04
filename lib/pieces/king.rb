@@ -1,14 +1,11 @@
 require_relative 'piece'
 
 class King < Piece
-  attr_accessor :check
-
-  def initialize(notation = nil, player = 1)
+  def initialize(coord = nil, player = 1)
     white_king = "\u2654"
     black_king = "\u265A"
     symbol = player == 1 ? white_king : black_king
-    super(notation, player, symbol)
-    @check = false
+    super(coord, player, symbol)
   end
 
   def deltas
