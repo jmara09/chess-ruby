@@ -22,9 +22,9 @@ class Piece
     return result unless square[0].between?(0, 7) &&
                          square[1].between?(0, 7)
 
-    piece = board[square[0]][square[1]][:piece]
+    piece = board[square[0]][square[1]]
 
-    if piece.nil?
+    if piece == ''
       result = ['empty', square]
     elsif piece.player != player
       result = ['enemy piece', square]
