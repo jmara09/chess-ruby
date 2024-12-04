@@ -10,6 +10,11 @@ class ChessBoard
     @black_pieces = []
   end
 
+  def update_pieces
+    @white_pieces = @white_pieces.reject { |piece| piece.coord == 'captured' }
+    @black_pieces = @black_pieces.reject { |piece| piece.coord == 'captured' }
+  end
+
   def eight_pawns(player)
     row = player == 1 ? 6 : 1
 
@@ -55,7 +60,7 @@ class ChessBoard
       start_color = row_index.even? ? colors[0] : colors[1]
       current_color = start_color
 
-      row.each_with_index do |square, col_index|
+      row.each do |square|
         line << if square == ''
                   square.center(6).colorize(background: current_color)
                 else
@@ -71,3 +76,16 @@ class ChessBoard
     puts
   end
 end
+
+# system 'clear'
+# puts '      '.colorize(background: :magenta)
+# p String.colors
+#
+
+chess = ChessBoard.new
+chess.set_pieces
+p chess.black_pieces
+# knight = chess.board[7][1][:piece]
+# deltas = knight.deltas
+# squares = knight.available_squares(deltas, chess.board)
+chess.print_board
