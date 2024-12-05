@@ -12,7 +12,7 @@ describe Pawn do
     context 'if moved is false' do
       context 'when there is an enemy piece two squares ahead' do
         before do
-          chess_board[4][1][:piece] = enemy_piece
+          chess_board[4][1] = enemy_piece
         end
 
         it 'will return the square' do
@@ -25,7 +25,7 @@ describe Pawn do
 
       context 'when your own piece is on two squares ahead' do
         before do
-          chess_board[4][1][:piece] = own_piece
+          chess_board[4][1] = own_piece
         end
 
         it 'will not include two squares ahead' do
@@ -48,7 +48,7 @@ describe Pawn do
     context 'if there is an enemy positioned diagonally' do
       context 'when the enemy piece is on upper left' do
         before do
-          chess_board[5][0][:piece] = enemy_piece
+          chess_board[5][0] = enemy_piece
         end
 
         it 'returns a message and the square' do
@@ -62,7 +62,7 @@ describe Pawn do
 
       context 'when the enemy piece is on upper right' do
         before do
-          chess_board[5][2][:piece] = enemy_piece
+          chess_board[5][2] = enemy_piece
         end
 
         it 'returns a message and the square' do
@@ -78,7 +78,7 @@ describe Pawn do
 
   describe '#deltas' do
     before do
-      allow(pawn).to receive(:convert_notation).and_return([2, 1])
+      allow(pawn).to receive(:coord).and_return([2, 1])
     end
 
     context 'if moved is false' do
@@ -94,26 +94,31 @@ describe Pawn do
 
   describe '#available_squares' do
     before do
-      middle_bottom = [2, 1]
-      allow(pawn).to receive(:convert_notation).and_return(middle_bottom)
+      allow(pawn).to receive(:coord).and_return([2, 1])
+      allow(pawn).to receive(:deltas).and_return({ forward: [[-1, 0], [-2, 0]],
+                                                   upper_left: [[-1, -1]], upper_right: [[-1, 1]] })
     end
 
     context 'if the deltas received are [-1, 0] and [-2, 0]' do
-      xit 'returns a square directly ahead and two squares ahead' do
-        deltas = [[-1, 0], [-2, 0]]
+      it 'returns a square directly ahead and two squares ahead' do
+        deltas = pawn.deltas
         one_square_ahead = [1, 1]
         two_squares_ahead = [0, 1]
-        result = pawn.available_squares(deltas)
+        result = pawn.available_squares(deltas, chess_board)
         expect(result).to include(one_square_ahead, two_squares_ahead)
       end
     end
 
     context 'if there is an enemy diagonally positioned both side' do
-      xit 'returns squares where the enemy piece is positioned' do
-        enemy_deltas = [[-1, -1], [-1, 1]]
+      before do
+        chess_board[1][0] = enemy_piece
+        chess_board[1][2] = enemy_piece
+      end
+      it 'returns squares where the enemy piece is positioned' do
+        deltas = pawn.deltas
         upper_left = [1, 0]
         upper_right = [1, 2]
-        result = pawn.available_squares(enemy_deltas)
+        result = pawn.available_squares(deltas, chess_board)
         expect(result).to include(upper_left, upper_right)
       end
     end
