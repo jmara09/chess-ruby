@@ -9,13 +9,6 @@ class Bishop < Piece
   end
 
   def deltas
-    deltas = { upper_left: [], upper_right: [], lower_left: [], lower_right: [] }
-    (1..7).each do |index|
-      deltas[:upper_left] << [-index, -index]
-      deltas[:upper_right] << [-index, index]
-      deltas[:lower_left] <<  [index, -index]
-      deltas[:lower_right] << [index, index]
-    end
-    deltas
+    diagonal
   end
 end

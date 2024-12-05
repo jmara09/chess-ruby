@@ -15,15 +15,6 @@ class Knight < Piece
   end
 
   def deltas
-    { around: [
-      [-2, -1],
-      [-2, 1],
-      [2, -1],
-      [2, 1],
-      [-1, -2],
-      [1, -2],
-      [-1, 2],
-      [1, 2]
-    ] }
+    jump
   end
 end

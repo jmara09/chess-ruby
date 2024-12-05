@@ -1,4 +1,8 @@
+require_relative '../moveable'
+
 class Piece
+  include Moveable
+
   attr_reader :symbol
   attr_accessor :coord, :moved, :player
 

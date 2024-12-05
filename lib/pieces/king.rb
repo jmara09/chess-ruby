@@ -9,15 +9,15 @@ class King < Piece
   end
 
   def deltas
-    deltas = {}
-    deltas[:upper_left] = [[-1, -1]]
-    deltas[:upper_right] = [[-1, 1]]
-    deltas[:lower_left] = [[1, -1]]
-    deltas[:lower_right] = [[1, 1]]
-    deltas[:forward] = [[-1, 0]]
-    deltas[:backward] = [[1, 0]]
-    deltas[:left] = [[0, -1]]
-    deltas[:right] = [[0, 1]]
-    deltas
+    vertical(1).merge(horizontal(1)).merge(diagonal(1))
+  end
+
+  def check?(enemy_moves)
+    enemy_moves.include?(coord)
+  end
+
+  def check_mate(enemy_moves)
+    king_movement = available_squares
+    king_movement.all? { |square| enemy_moves.include?(square) }
   end
 end
