@@ -17,13 +17,13 @@ class ChessBoard
     @black_pieces = @black_pieces.reject { |piece| piece.coord == 'captured' }
   end
 
-  def eight_pawns(player)
-    row = player == 1 ? 6 : 1
+  def eight_pawns(color)
+    row = color == 'white' ? 6 : 1
 
     @board[row].each.with_index do |_, index|
       coord = [row, index]
-      @board[row][index] = Pawn.new(coord, player)
-      if player == 1
+      @board[row][index] = Pawn.new(coord, color)
+      if color == 'white'
         @white_pieces << @board[row][index]
       else
         @black_pieces << @board[row][index]
@@ -31,14 +31,14 @@ class ChessBoard
     end
   end
 
-  def royalty(player)
+  def royalty(color)
     royals = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
-    row = player == 1 ? 7 : 0
+    row = color == 'white' ? 7 : 0
 
     @board[row].each_with_index do |_, index|
       coord = [row, index]
-      @board[row][index] = royals[index].new(coord, player)
-      if player == 1
+      @board[row][index] = royals[index].new(coord, color)
+      if color == 'white'
         @white_king = @board[row][index] if @board[row][index].is_a?(King)
         @white_pieces << @board[row][index]
       else
@@ -49,9 +49,9 @@ class ChessBoard
   end
 
   def set_pieces
-    2.times do |index|
-      eight_pawns(index + 1)
-      royalty(index + 1)
+    %w[white black].each do |color|
+      eight_pawns(color)
+      royalty(color)
     end
   end
 
