@@ -55,26 +55,28 @@ class ChessBoard
     end
   end
 
-  def print_board
-    length = @board.length
-    colors = %i[white black]
+  def print_board(moves = [], board_colors: %i[white black], highlight_color: :yellow)
+    row_number = @board.length
 
     @board.each_with_index do |row, row_index|
       line = []
-      start_color = row_index.even? ? colors[0] : colors[1]
+      start_color = row_index.even? ? board_colors[0] : board_colors[1]
       current_color = start_color
 
-      row.each do |square|
+      row.each_with_index do |square, col_index|
+        square_color = moves.include?([row_index, col_index]) ? highlight_color : current_color
+
         line << if square == ''
-                  square.center(6).colorize(background: current_color)
+                  square.center(6).colorize(background: square_color)
                 else
-                  "#{square.symbol.center(6).colorize(background: current_color)}"
+                  square.symbol.center(6).colorize(background: square_color)
                 end
-        current_color = current_color == colors[0] ? colors[1] : colors[0]
+
+        current_color = current_color == board_colors[0] ? board_colors[1] : board_colors[0]
       end
 
-      puts "#{length} #{line.join}"
-      length -= 1
+      puts "#{row_number} #{line.join}"
+      row_number -= 1
     end
     'abcdefgh'.chars.each { |chr| print "    #{chr} " }
     puts
