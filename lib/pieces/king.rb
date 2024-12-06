@@ -1,11 +1,11 @@
 require_relative 'piece'
 
 class King < Piece
-  def initialize(coord = nil, player = 1)
+  def initialize(coord = nil, color = 'white')
     white_king = "\u2654"
     black_king = "\u265A"
-    symbol = player == 1 ? white_king : black_king
-    super(coord, player, symbol)
+    symbol = color == 'white' ? white_king : black_king
+    super(coord, color, symbol)
   end
 
   def deltas

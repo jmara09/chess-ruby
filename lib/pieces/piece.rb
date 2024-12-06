@@ -4,10 +4,10 @@ class Piece
   include Moveable
 
   attr_reader :symbol
-  attr_accessor :coord, :moved, :player
+  attr_accessor :coord, :moved, :color
 
-  def initialize(coord = nil, player = 1, symbol = nil)
-    @player = player
+  def initialize(coord = nil, color = 'white', symbol = nil)
+    @color = color
     @coord = coord
     @symbol = symbol
   end
@@ -16,7 +16,7 @@ class Piece
     raise NotImplementedError, 'Subclasses must define the method'
   end
 
-  def check_square(delta, current_position, board, player = 1)
+  def check_square(delta, current_position, board, color = 'white')
     result = [nil, nil]
     square = [
       delta[0] + current_position[0],
@@ -30,9 +30,9 @@ class Piece
 
     if piece == ''
       result = ['empty', square]
-    elsif piece.player != player
+    elsif piece.color != color
       result = ['enemy piece', square]
-    elsif piece.player == player
+    elsif piece.color == color
       result[0] = 'own piece'
     end
 

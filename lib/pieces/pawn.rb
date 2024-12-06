@@ -3,15 +3,15 @@ require_relative 'piece'
 class Pawn < Piece
   attr_accessor :moved
 
-  def initialize(coord = nil, player = 1)
+  def initialize(coord = nil, color = 'white')
     white_pawn = "\u2659"
     black_pawn = "\u265F"
-    symbol = player == 1 ? white_pawn : black_pawn
-    super(coord, player, symbol)
+    symbol = color == 'white' ? white_pawn : black_pawn
+    super(coord, color, symbol)
     @moved = false
   end
 
-  def check_square(delta, current_position, board, player = 1)
+  def check_square(delta, current_position, board, color = 'white')
     result = super
     diagonal_deltas = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
 
@@ -25,8 +25,8 @@ class Pawn < Piece
     black_restrictions = %i[up upper_left upper_right]
     white_restrictions = %i[down lower_left lower_right]
     deltas = vertical(steps).merge(diagonal(1))
-    deltas = deltas.except(*white_restrictions) if player == 1
-    deltas = deltas.except(*black_restrictions) if player == 2
+    deltas = deltas.except(*white_restrictions) if color == 'white'
+    deltas = deltas.except(*black_restrictions) if color == 'black'
     deltas
   end
 end
