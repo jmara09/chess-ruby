@@ -4,51 +4,85 @@ require_relative 'position_converter'
 class Player
   include PositionConverter
 
-  attr_reader :player, :captured
+  attr_reader :color, :captured, :name
 
-  def initialize(player = 1)
-    @player = player
+  def initialize(color, king)
+    @color = color
+    @king = king
     @captured = []
   end
 
-  def valid_move?(start_square, end_square, board)
-    piece = start_square[:piece]
-    deltas = piece.deltas
-    moves = piece.available_squares(deltas, board)
-    moves.include?(end_square)
+  def valid_piece?(coord, board)
+    raise InvalidNotation, 'Invalid coordinate' unless coord
+
+    square = board.board[coord[0]][coord[1]]
+    raise InvalidPiece, 'Please select your own piece' if square == '' || square.color != color
+
+    true
   end
 
-  def move(start_pos, end_pos, chess_board)
-    start_coord = to_coord(start_pos)
-    end_coord = to_coord(end_pos)
+  def select_piece(board)
+    loop do
+      print 'Please select a piece (e.g., "a1"): '
+      input = gets.chomp
+      coord = to_coord(input)
 
-    return puts 'Invalid notation' if start_coord == 'Invalid' || end_coord == 'Invalid'
+      begin
+        valid_piece?(coord, board)
+        piece = board.board[coord[0]][coord[1]]
+        legal_moves = piece.available_squares(piece.deltas, board.board)
 
-    start_square = chess_board.board[start_coord[0]][start_coord[1]]
-    end_square = chess_board.board[end_coord[0]][end_coord[1]]
+        if legal_moves.empty?
+          puts "#{piece.class} at #{input} has no available moves."
+          next
+        end
 
-    return puts 'Invalid. Square is empty' if start_square[:piece].nil?
+        board.print_board(legal_moves)
+        return piece
+      rescue InvalidNotation => e
+        puts "#{e.message} Please try again."
+      rescue InvalidPiece => e
+        puts e.message
+      end
+    end
+  end
 
-    return puts 'Invalid move' unless valid_move?(start_square, end_coord, chess_board.board)
+  def target_square(piece, notation, board)
+    loop do
+      coord = to_coord(notation)
+      if coord.nil?
+        puts 'Invalid notation. Please try again:'
+      elsif piece.available_squares(piece.deltas, board.board).include?(coord)
+        return coord
+      else
+        puts 'Illegal move. Please try again:'
+      end
+      notation = gets.chomp
+    end
+  end
 
-    return puts 'Invalid input. Please choose you own piece' unless start_square[:piece].player == player
+  def move(end_notation, board)
+    selected_piece = select_piece(board)
+    next_square = target_square(select_piece, end_notation, board)
 
-    @captured << end_square[:symbol] unless end_square[:piece].nil?
+    end_square = board.board[next_square[0]][next_square[1]]
 
-    piece = start_square[:piece]
-    piece.notation = end_square[:notation]
-    end_square[:piece] = piece
-    end_square[:symbol] = piece.symbol
-    start_square[:piece] = nil
-    start_square[:symbol] = ''
+    unless end_square == ''
+      @captured << end_square.symbol
+      end_square.coord = nil
+    end
 
-    end_square[:piece].moved = true if end_square[:piece].is_a?(Pawn)
-    chess_board.print_board
+    board.board[next_square[0]][next_square[1]] = selected_piece
+    board.board[selected_piece.coord[0]][selected_piece.coord[1]] = ''
+    selected_piece.coord = next_square
+
+    selected_piece.moved = true if selected_piece.is_a?(Pawn)
+    true
   end
 end
 
-chess_board = ChessBoard.new
-chess_board.set_pieces
-jm = Player.new
+class InvalidNotation < StandardError
+end
 
-jm.move('b1', 'a3', chess_board)
+class InvalidPiece < StandardError
+end
