@@ -13,8 +13,8 @@ class ChessBoard
   end
 
   def update_pieces
-    @white_pieces = @white_pieces.reject { |piece| piece.coord == 'captured' }
-    @black_pieces = @black_pieces.reject { |piece| piece.coord == 'captured' }
+    @white_pieces = @white_pieces.reject { |piece| piece.coord.nil? }
+    @black_pieces = @black_pieces.reject { |piece| piece.coord.nil? }
   end
 
   def eight_pawns(color)
