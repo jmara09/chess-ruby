@@ -1,7 +1,7 @@
 require_relative 'chess_board'
 
 class Player
-  attr_reader :color, :captured, :active_pieces
+  attr_reader :color, :captured, :active_pieces, :king
 
   def initialize(color, king, pieces)
     @color = color
