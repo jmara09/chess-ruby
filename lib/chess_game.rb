@@ -4,8 +4,7 @@ require_relative 'computer'
 require_relative 'player'
 
 class ChessGame
-  # remove chessboard later
-  attr_accessor :player_one, :player_two, :computer, :chess_board, :winner, :game_status
+  attr_accessor :player_one, :player_two, :computer, :winner, :game_status
 
   def initialize
     @player_one = nil
