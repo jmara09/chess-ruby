@@ -45,7 +45,7 @@ class ChessGame
   def handle_checkmate(player, opponent)
     players = [player, opponent]
 
-    threatened_player = players.find? do |participant|
+    threatened_player = players.find do |participant|
       attacker = participant == player ? opponent : player
       participant.king.check_mate(attacker.active_pieces, @chess_board.board)
     end
@@ -68,6 +68,7 @@ class ChessGame
 
       input = input == 'w' ? 'white' : 'black'
       puts "You will play as #{input.colorize(:blue)}"
+      puts
       break
     end
     input
@@ -75,18 +76,18 @@ class ChessGame
 
   def player_input
     color = choose_color
-    king = @chess_board.call_method(:"#{color}_king")
-    pieces = @chess_board.call_method(:"#{color}_pieces")
+    king = @chess_board.send(:"#{color}_king")
+    pieces = @chess_board.send(:"#{color}_pieces")
     @player_one = Player.new(color, king, pieces)
   end
 
   def setup_opponent(player_one)
     opponent_color = player_one == 'white' ? 'black' : 'white'
-    king = @chess_board.call_method(:"#{opponent_color}_king")
-    pieces = @chess_board.call_method(:"#{opponent_color}_pieces")
+    king = @chess_board.send(:"#{opponent_color}_king")
+    pieces = @chess_board.send(:"#{opponent_color}_pieces")
 
     loop do
-      print 'Would you like to play against another player? [y/n]'
+      print 'Would you like to play against another player? [y/n] '
       input = gets.chomp
 
       redo unless %w[y n].include?(input)
@@ -125,3 +126,6 @@ class ChessGame
     end
   end
 end
+
+chess = ChessGame.new
+chess.start
