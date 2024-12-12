@@ -59,8 +59,10 @@ class Player
 
         board.print_board(legal_moves)
 
-        until ['y', 'N', ''].include?(choice = gets.chomp)
+        choice = nil
+        loop do
           print 'Would you like to change the piece? [y/N] '
+          break if ['y', 'N', ''].include?(choice = gets.chomp)
         end
 
         if choice == 'y'
