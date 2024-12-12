@@ -1,9 +1,11 @@
 require_relative 'chess_board'
 
 class Computer
-  attr_reader :active_pieces, :captured
+  attr_reader :active_pieces, :captured, :color, :king
 
-  def initialize(pieces)
+  def initialize(color, king, pieces)
+    @color = color
+    @king = king
     @active_pieces = pieces
     @captured = []
   end
