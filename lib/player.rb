@@ -1,30 +1,50 @@
 require_relative 'chess_board'
-require_relative 'position_converter'
 
 class Player
-  include PositionConverter
+  attr_reader :color, :captured, :active_pieces
 
-  attr_reader :color, :captured, :name
-
-  def initialize(color, king)
+  def initialize(color, king, pieces)
     @color = color
     @king = king
+    @active_pieces = pieces
     @captured = []
   end
 
+  def to_coord(notation)
+    return nil if notation.nil? || notation.length != 2
+
+    col = notation[0].downcase
+    row = notation[1]
+
+    return nil unless ('a'..'h').include?(col) && ('1'..'8').include?(row)
+
+    converted_row = 8 - row.to_i
+    converted_col = col.ord - 'a'.ord
+    [converted_row, converted_col]
+  end
+
   def valid_piece?(coord, board)
-    raise InvalidNotation, 'Invalid coordinate' unless coord
+    raise InvalidNotation unless coord
 
     square = board.board[coord[0]][coord[1]]
-    raise InvalidPiece, 'Please select your own piece' if square == '' || square.color != color
+    raise InvalidPiece if square == '' || square.color != color
 
     true
+  end
+
+  def check_for_save_or_exit(input)
+    return input if %w[save exit].include?(input)
+
+    nil
   end
 
   def select_piece(board)
     loop do
       print 'Please select a piece (e.g., "a1"): '
       input = gets.chomp
+      return input if check_for_save_or_exit(input)
+      next if input.empty?
+
       coord = to_coord(input)
 
       begin
@@ -38,17 +58,29 @@ class Player
         end
 
         board.print_board(legal_moves)
-        return piece
-      rescue InvalidNotation => e
-        puts "#{e.message} Please try again."
-      rescue InvalidPiece => e
+
+        until ['y', 'N', ''].include?(choice = gets.chomp)
+          print 'Would you like to change the piece? [y/N] '
+        end
+
+        if choice == 'y'
+          next
+        elsif ['N', ''].include?(choice)
+          return piece
+        end
+      rescue InvalidNotation, InvalidPiece => e
         puts e.message
       end
     end
   end
 
-  def target_square(piece, notation, board)
+  def target_square(piece, board)
+    print 'Type the next notation to make a move: '
+    notation = gets.chomp
+
     loop do
+      return notation if check_for_save_or_exit(notation)
+
       coord = to_coord(notation)
       if coord.nil?
         puts 'Invalid notation. Please try again:'
@@ -61,9 +93,12 @@ class Player
     end
   end
 
-  def move(end_notation, board)
+  def move(board)
     selected_piece = select_piece(board)
-    next_square = target_square(select_piece, end_notation, board)
+    return selected_piece if check_for_save_or_exit(selected_piece)
+
+    next_square = target_square(selected_piece, board)
+    return next_square if check_for_save_or_exit(next_square)
 
     end_square = board.board[next_square[0]][next_square[1]]
 
@@ -77,12 +112,18 @@ class Player
     selected_piece.coord = next_square
 
     selected_piece.moved = true if selected_piece.is_a?(Pawn)
-    true
+    'continue'
   end
 end
 
 class InvalidNotation < StandardError
+  def message
+    'The notation you entered is not valid. Please enter a valid chess notation (e.g., "a1").'
+  end
 end
 
 class InvalidPiece < StandardError
+  def message
+    'The selected piece is either not yours or is invalid. Please try again.'
+  end
 end
