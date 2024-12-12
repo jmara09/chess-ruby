@@ -1,7 +1,7 @@
 require_relative 'chess_board'
 
 class Computer
-  attr_accessor :captured
+  attr_reader :active_pieces, :captured
 
   def initialize(pieces)
     @active_pieces = pieces
