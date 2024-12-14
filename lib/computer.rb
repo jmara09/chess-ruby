@@ -15,12 +15,15 @@ class Computer
     piece = shuffled_pieces.find do |p|
       !p.available_squares(p.deltas, board).empty?
     end
-    raise 'No available moves for any piece!' unless piece
+    return nil unless piece
 
     piece
   end
 
-  def random_move(piece, board)
+  def random_move(board)
+    piece = random_piece(board)
+    return puts 'No available piece' if piece.nil?
+
     legal_moves = piece.available_squares(piece.deltas, board)
     raise "No legal moves available for piece: #{piece.inspect}" if legal_moves.empty?
 
