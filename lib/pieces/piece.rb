@@ -16,7 +16,7 @@ class Piece
     raise NotImplementedError, 'Subclasses must define the method'
   end
 
-  def check_square(delta, current_position, board, color = 'white')
+  def check_square(delta, current_position, board, color)
     result = [nil, nil]
     square = [
       delta[0] + current_position[0],
@@ -39,17 +39,23 @@ class Piece
     result
   end
 
-  def available_squares(delta_group, board)
+  def available_squares(delta_group, board, own_color)
     current_position = coord
     squares = []
-    delta_group.each_value do |deltas|
+    delta_group.each do |direction, deltas|
       deltas.each do |delta|
-        result = check_square(delta, current_position, board)
-        next if result.first.nil?
-        break if result.first == 'own piece'
+        square_element, square = check_square(delta, current_position, board, own_color)
+        next if square_element.nil?
 
-        squares << result.last
-        break if result.first == 'enemy piece'
+        if direction == :around && square_element != 'own piece'
+          squares << square
+          next
+        end
+
+        break if square_element == 'own piece'
+
+        squares << square
+        break if square_element == 'enemy piece'
       end
     end
     squares
