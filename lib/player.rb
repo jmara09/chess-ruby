@@ -1,7 +1,8 @@
 require_relative 'chess_board'
 
 class Player
-  attr_reader :color, :captured, :active_pieces, :king
+  attr_accessor :active_pieces
+  attr_reader :color, :captured, :king
 
   def initialize(color, king, pieces)
     @color = color
@@ -50,7 +51,7 @@ class Player
       begin
         valid_piece?(coord, board)
         piece = board.board[coord[0]][coord[1]]
-        legal_moves = piece.available_squares(piece.deltas, board.board)
+        legal_moves = piece.available_squares(piece.deltas, board.board, color)
 
         if legal_moves.empty?
           puts "#{piece.class} at #{input} has no available moves."
@@ -59,17 +60,7 @@ class Player
 
         board.print_board(legal_moves)
 
-        choice = nil
-        loop do
-          print 'Would you like to change the piece? [y/N] '
-          break if ['y', 'N', ''].include?(choice = gets.chomp)
-        end
-
-        if choice == 'y'
-          next
-        elsif ['N', ''].include?(choice)
-          return piece
-        end
+        return piece
       rescue InvalidNotation, InvalidPiece => e
         puts e.message
       end
@@ -77,16 +68,16 @@ class Player
   end
 
   def target_square(piece, board)
-    print 'Type the next notation to make a move: '
+    print 'Type redo to change or the next notation to make a move: '
     notation = gets.chomp
 
     loop do
-      return notation if check_for_save_or_exit(notation)
+      return notation if notation == 'redo' || check_for_save_or_exit(notation)
 
       coord = to_coord(notation)
       if coord.nil?
         puts 'Invalid notation. Please try again:'
-      elsif piece.available_squares(piece.deltas, board.board).include?(coord)
+      elsif piece.available_squares(piece.deltas, board.board, color).include?(coord)
         return coord
       else
         puts 'Illegal move. Please try again:'
@@ -100,6 +91,7 @@ class Player
     return selected_piece if check_for_save_or_exit(selected_piece)
 
     next_square = target_square(selected_piece, board)
+    raise Redo if next_square == 'redo'
     return next_square if check_for_save_or_exit(next_square)
 
     end_square = board.board[next_square[0]][next_square[1]]
@@ -115,7 +107,12 @@ class Player
 
     selected_piece.moved = true if selected_piece.is_a?(Pawn)
     'continue'
+  rescue Redo
+    retry
   end
+end
+
+class Redo < StandardError
 end
 
 class InvalidNotation < StandardError
