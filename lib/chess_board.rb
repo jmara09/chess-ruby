@@ -8,13 +8,6 @@ class ChessBoard
     @board = Array.new(8) { Array.new(8) { '' } }
     @white_pieces = []
     @black_pieces = []
-    @white_king = nil
-    @black_king = nil
-  end
-
-  def update_pieces
-    @white_pieces = @white_pieces.reject { |piece| piece.coord.nil? }
-    @black_pieces = @black_pieces.reject { |piece| piece.coord.nil? }
   end
 
   def eight_pawns(color)
@@ -56,6 +49,7 @@ class ChessBoard
   end
 
   def print_board(moves = [], board_colors: %i[white black], highlight_color: :yellow)
+    system 'clear'
     row_number = @board.length
 
     @board.each_with_index do |row, row_index|
