@@ -4,32 +4,132 @@ require_relative 'computer'
 require_relative 'player'
 
 class ChessGame
-  attr_accessor :player_one, :player_two, :computer, :winner, :game_status
+  attr_accessor :computer, :current_player, :game_status, :player_one, :player_two
 
   def initialize
-    @player_one = nil
-    @player_two = nil
-    @computer = nil
     @chess_board = ChessBoard.new
     @game_status = 'continue'
-    @winner = nil
+  end
+
+  def update_pieces(player, opponent)
+    player.active_pieces = player.active_pieces.reject { |piece| piece.coord.nil? }
+    opponent.active_pieces = opponent.active_pieces.reject { |piece| piece.coord.nil? }
   end
 
   def start
     @chess_board.set_pieces
     player_input
     opponent = setup_opponent(@player_one.color)
-    current_player = @player_one.color == 'white' ? @player_one : opponent
+    @current_player = @player_one.color == 'white' ? @player_one : opponent
 
     while @game_status == 'continue'
-      @chess_board.update_pieces
       @chess_board.print_board
-      play_turn(current_player)
-      handle_checkmate(@player_one, opponent)
-      handle_check(@player_one, opponent)
+      current_opponent = toggle_player(@current_player, @player_one, opponent)
+
+      if check?(@current_player.king, current_opponent.active_pieces, @chess_board.board)
+        puts "#{@current_player.color.colorize(:blue)} is in check"
+      end
+
+      play_turn(@current_player)
+      update_pieces(@player_one, opponent)
+
+      if current_opponent.king.coord.nil? || opponent_check_mate?(current_opponent.king, @current_player.active_pieces,
+                                                                  current_opponent.active_pieces, @chess_board.board)
+        @chess_board.print_board
+        puts "#{@current_player.color.capitalize.colorize(:blue)} wins!"
+
+        if replay
+          reset
+          start
+        end
+
+        @game_status = 'exit'
+      end
+
       process_game_status
-      current_player = current_player == @player_one ? opponent : @player_one
+      @current_player = toggle_player(@current_player, @player_one, opponent)
     end
+  end
+
+  def reset
+    @chess_board = ChessBoard.new
+    @game_status = 'continue'
+    @player_one = nil
+    @player_two = nil
+    @computer = nil
+  end
+
+  def replay
+    loop do
+      print 'Play another game? [y/n] '
+      input = gets.chomp.downcase
+      next unless %w[y n].include?(input)
+      return true if input == 'y'
+
+      return false
+    end
+  end
+
+  def toggle_player(current, player_one, player_two)
+    current == player_one ? player_two : player_one
+  end
+
+  def check?(king, enemy_pieces, board)
+    return false if enemy_pieces.empty?
+
+    enemy_color = king.color == 'white' ? 'black' : 'white'
+
+    enemy_pieces.any? do |piece|
+      piece.available_squares(piece.deltas, board, enemy_color).include?(king.coord)
+    end
+  end
+
+  def path_to_king(king_coord, opponent_coord)
+    row_offset = opponent_coord[0] <=> king_coord[0]
+    col_offset = opponent_coord[1] <=> king_coord[1]
+    current_square = king_coord
+    paths = []
+
+    until current_square == opponent_coord
+      current_square = [
+        row_offset + current_square[0],
+        col_offset + current_square[1]
+      ]
+
+      paths << current_square
+    end
+
+    paths
+  end
+
+  def opponent_check_mate?(enemy_king, own_pieces, enemy_pieces, board)
+    return false unless check?(enemy_king, own_pieces, board)
+    return false if own_pieces.empty?
+
+    enemy_king_moves = enemy_king.available_squares(enemy_king.deltas, board, enemy_king.color)
+    all_own_moves = own_pieces.flat_map { |piece| piece.available_squares(piece.deltas, board, piece.color) }
+    return true if enemy_king_moves.empty?
+
+    enemy_king_safe = enemy_king_moves.any? { |enemy_king_move| !all_own_moves.include?(enemy_king_move) }
+    return false if enemy_king_safe
+
+    attackers = own_pieces.select do |own_piece|
+      own_piece.available_squares(own_piece.deltas, board, own_piece.color).include?(enemy_king.coord)
+    end
+
+    return true if attackers.size > 1
+
+    paths = path_to_king(enemy_king.coord, attackers.first.coord)
+
+    all_enemy_moves = enemy_pieces.flat_map do |piece|
+      next if piece.is_a?(King)
+
+      piece.available_squares(piece.deltas, board, piece.color)
+    end
+
+    block_or_capture = paths.any? { |square| all_enemy_moves.include?(square) }
+
+    !block_or_capture
   end
 
   def process_game_status
@@ -40,21 +140,6 @@ class ChessGame
       puts 'Exiting game'
       exit
     end
-  end
-
-  def handle_checkmate(player, opponent)
-    players = [player, opponent]
-
-    threatened_player = players.find do |participant|
-      attacker = participant == player ? opponent : player
-      participant.king.check_mate(attacker.active_pieces, @chess_board.board)
-    end
-
-    return unless threatened_player
-
-    @winner = (threatened_player == player ? opponent : player).color
-    puts "#{@winner.colorize(:blue).capitalize} wins!"
-    @game_status = 'exit'
   end
 
   def choose_color
@@ -87,32 +172,18 @@ class ChessGame
     pieces = @chess_board.send(:"#{opponent_color}_pieces")
 
     loop do
-      print 'Would you like to play against another player? [y/n] '
-      input = gets.chomp
+      print 'Would you like to play against another player? [y/N] '
+      input = gets.chomp.downcase
 
-      redo unless %w[y n].include?(input)
+      redo unless ['y', 'n', ''].include?(input)
 
       if input == 'y'
         @player_two = Player.new(opponent_color, king, pieces)
         return @player_two
-      else
+      elsif ['n', ''].include?(input)
         @computer = Computer.new(opponent_color, king, pieces)
         return @computer
       end
-    end
-  end
-
-  def handle_check(player, opponent)
-    players_in_check = [player, opponent].select do |participant|
-      attacker = participant == player ? opponent : player
-      participant.king.check?(attacker.active_pieces, @chess_board.board)
-    end
-
-    case players_in_check.size
-    when 2
-      puts 'Both are in check'
-    when 1
-      puts "#{players_in_check.first.color} is in check"
     end
   end
 
@@ -122,7 +193,11 @@ class ChessGame
     if current_player.is_a?(Player)
       @game_status = current_player.move(@chess_board)
     else
-      @computer.random_move(@computer.random_piece, @chess_board.board)
+      puts 'Computer is thinking..'
+      sleep(1)
+      @computer.random_move(@chess_board.board)
+      puts 'Computer makes a move'
+      sleep(1)
     end
   end
 end

@@ -13,9 +13,4 @@ AllCops:
   Exclude:
     - "Gemfile"
     - "Gemfile.lock"
-    - "spec/spec_helper.rb"
   NewCops: enable
-Metrics/BlockLength:
-  Exclude:
-    - "spec/*"
-    - "spec/pieces/*"

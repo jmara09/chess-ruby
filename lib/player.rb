@@ -108,6 +108,7 @@ class Player
     selected_piece.moved = true if selected_piece.is_a?(Pawn)
     'continue'
   rescue Redo
+    board.print_board
     retry
   end
 end
