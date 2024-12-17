@@ -8,12 +8,6 @@ class Knight < Piece
     super(coord, color, symbol)
   end
 
-  def check_square(delta, current_position, board, color = 'white')
-    result = super
-    result[0] = nil if result.first == 'own piece'
-    result
-  end
-
   def deltas
     jump
   end
