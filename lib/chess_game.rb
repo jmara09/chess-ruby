@@ -73,8 +73,48 @@ class ChessGame
       end
     end
 
-    File.open(file_location, 'w') do |file|
-      file.puts YAML.dump(self)
+    File.open(file_location, 'wb') do |file|
+      file.puts YAML.dump({  chess_board: @chess_board,
+                             computer: @computer,
+                             current_player: @current_player,
+                             game_status: @game_status,
+                             player_one: @player_one,
+                             player_two: @player_two })
+    end
+  end
+
+  def load_game
+    print 'Type the name of the saved file to load: '
+    name = gets.chomp
+    file_location = "save_files/#{name}.yaml"
+
+    if File.exist?(file_location)
+      begin
+        data = YAML.load_file(file_location)
+        @chess_board = data[:chess_board]
+        @computer = data[:computer]
+        @current_player = data[:current_player]
+        @game_status = data[:game_status]
+        @player_one = data[:player_one]
+        @player_two = data[:player_two]
+        puts 'Game loaded successfully!'
+        true
+      rescue StandardError => e
+        puts "An error occurred while loading the game: #{e.message}"
+      end
+    else
+      puts 'File does not exist'
+      puts
+      loop do
+        print 'Retry? [y/n]'
+        input = gets.chomp
+        next unless %w[y n].include?(input)
+
+        case input
+        when 'y' then load_game
+        when 'n' then false
+        end
+      end
     end
   end
 
@@ -164,7 +204,7 @@ class ChessGame
   def process_game_status
     case @game_status
     when 'save'
-      # implement saving
+      save_game
     when 'exit'
       puts 'Exiting game'
       exit
@@ -231,11 +271,11 @@ class ChessGame
   end
 end
 
+module YAML
+  class << self
+    alias load unsafe_load
+  end
+end
+
 chess = ChessGame.new
-chess.chess_board.set_pieces
-# chess.player_input
-# chess.setup_opponent(chess.player_one.color)
-# p chess.player_one.color
-# p chess.computer.color
-chess.save_game
-# chess.start
+chess.start
