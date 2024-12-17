@@ -2,10 +2,13 @@ require 'colorize'
 require 'yaml'
 
 require_relative 'computer'
+require_relative 'file_manager'
 require_relative 'player'
 
 class ChessGame
-  attr_reader :chess_board, :computer, :current_player, :game_status, :player_one, :player_two
+  include FileManager
+
+  attr_accessor :chess_board, :computer, :current_player, :opponent, :game_status, :player_one, :player_two
 
   def initialize
     @chess_board = ChessBoard.new
@@ -18,21 +21,29 @@ class ChessGame
   end
 
   def start
-    @chess_board.set_pieces
-    player_input
-    opponent = setup_opponent(@player_one.color)
-    @current_player = @player_one.color == 'white' ? @player_one : opponent
+    print 'Load game? [y/n] '
+    input = gets.chomp
+    start unless %w[y n].include?(input)
+
+    if input == 'y'
+      load_game(self)
+    else
+      @chess_board.set_pieces
+      player_input
+      @opponent = setup_opponent(@player_one.color)
+      @current_player = @player_one.color == 'white' ? @player_one : @opponent
+    end
 
     while @game_status == 'continue'
       @chess_board.print_board
-      current_opponent = toggle_player(@current_player, @player_one, opponent)
+      current_opponent = toggle_player(@current_player, @player_one, @opponent)
 
       if check?(@current_player.king, current_opponent.active_pieces, @chess_board.board)
         puts "#{@current_player.color.colorize(:blue)} is in check"
       end
 
       play_turn(@current_player)
-      update_pieces(@player_one, opponent)
+      update_pieces(@player_one, @opponent)
 
       if current_opponent.king.coord.nil? || opponent_check_mate?(current_opponent.king, @current_player.active_pieces,
                                                                   current_opponent.active_pieces, @chess_board.board)
@@ -47,74 +58,9 @@ class ChessGame
         @game_status = 'exit'
       end
 
-      process_game_status
-      @current_player = toggle_player(@current_player, @player_one, opponent)
-    end
-  end
+      next if process_game_status == 'saved'
 
-  def save_game
-    print 'Name your save file: '
-    name = gets.chomp
-    file_location = "save_files/#{name}.yaml"
-
-    catch(:continue) do
-      if File.exist?(file_location)
-        input = nil
-
-        loop do
-          print "#{name} already exist. Overwrite? [y/n] "
-          input = gets.chomp
-          next unless %w[y n].include?(input)
-
-          throw :continue unless input == 'n'
-
-          save_game
-        end
-      end
-    end
-
-    File.open(file_location, 'wb') do |file|
-      file.puts YAML.dump({  chess_board: @chess_board,
-                             computer: @computer,
-                             current_player: @current_player,
-                             game_status: @game_status,
-                             player_one: @player_one,
-                             player_two: @player_two })
-    end
-  end
-
-  def load_game
-    print 'Type the name of the saved file to load: '
-    name = gets.chomp
-    file_location = "save_files/#{name}.yaml"
-
-    if File.exist?(file_location)
-      begin
-        data = YAML.load_file(file_location)
-        @chess_board = data[:chess_board]
-        @computer = data[:computer]
-        @current_player = data[:current_player]
-        @game_status = data[:game_status]
-        @player_one = data[:player_one]
-        @player_two = data[:player_two]
-        puts 'Game loaded successfully!'
-        true
-      rescue StandardError => e
-        puts "An error occurred while loading the game: #{e.message}"
-      end
-    else
-      puts 'File does not exist'
-      puts
-      loop do
-        print 'Retry? [y/n]'
-        input = gets.chomp
-        next unless %w[y n].include?(input)
-
-        case input
-        when 'y' then load_game
-        when 'n' then false
-        end
-      end
+      @current_player = toggle_player(@current_player, @player_one, @opponent)
     end
   end
 
@@ -204,7 +150,9 @@ class ChessGame
   def process_game_status
     case @game_status
     when 'save'
-      save_game
+      @game_status = 'continue'
+      save_game(self)
+      'saved'
     when 'exit'
       puts 'Exiting game'
       exit
