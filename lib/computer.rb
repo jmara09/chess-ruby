@@ -14,7 +14,7 @@ class Computer
   def random_piece(board)
     shuffled_pieces = @active_pieces.shuffle
     piece = shuffled_pieces.find do |p|
-      !p.available_squares(p.deltas, board, color).empty?
+      !p.available_squares(board).empty?
     end
     return nil unless piece
 
@@ -25,7 +25,7 @@ class Computer
     piece = random_piece(board)
     return puts 'No available piece' if piece.nil?
 
-    legal_moves = piece.available_squares(piece.deltas, board, color)
+    legal_moves = piece.available_squares(board)
     puts "No legal moves available for piece: #{piece.inspect}" if legal_moves.empty?
 
     random_coord = legal_moves.sample

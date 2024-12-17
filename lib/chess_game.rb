@@ -77,10 +77,8 @@ class ChessGame
   def check?(king, enemy_pieces, board)
     return false if enemy_pieces.empty?
 
-    enemy_color = king.color == 'white' ? 'black' : 'white'
-
     enemy_pieces.any? do |piece|
-      piece.available_squares(piece.deltas, board, enemy_color).include?(king.coord)
+      piece.available_squares(board).include?(king.coord)
     end
   end
 
@@ -106,15 +104,15 @@ class ChessGame
     return false unless check?(enemy_king, own_pieces, board)
     return false if own_pieces.empty?
 
-    enemy_king_moves = enemy_king.available_squares(enemy_king.deltas, board, enemy_king.color)
-    all_own_moves = own_pieces.flat_map { |piece| piece.available_squares(piece.deltas, board, piece.color) }
+    enemy_king_moves = enemy_king.available_squares(board)
+    all_own_moves = own_pieces.flat_map { |piece| piece.available_squares(board) }
     return true if enemy_king_moves.empty?
 
     enemy_king_safe = enemy_king_moves.any? { |enemy_king_move| !all_own_moves.include?(enemy_king_move) }
     return false if enemy_king_safe
 
     attackers = own_pieces.select do |own_piece|
-      own_piece.available_squares(own_piece.deltas, board, own_piece.color).include?(enemy_king.coord)
+      own_piece.available_squares(board).include?(enemy_king.coord)
     end
 
     return true if attackers.size > 1
@@ -124,7 +122,7 @@ class ChessGame
     all_enemy_moves = enemy_pieces.flat_map do |piece|
       next if piece.is_a?(King)
 
-      piece.available_squares(piece.deltas, board, piece.color)
+      piece.available_squares(board)
     end
 
     block_or_capture = paths.any? { |square| all_enemy_moves.include?(square) }

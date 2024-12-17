@@ -51,7 +51,7 @@ class Player
       begin
         valid_piece?(coord, board)
         piece = board.board[coord[0]][coord[1]]
-        legal_moves = piece.available_squares(piece.deltas, board.board, color)
+        legal_moves = piece.available_squares(board.board)
 
         if legal_moves.empty?
           puts "#{piece.class} at #{input} has no available moves."
@@ -77,7 +77,7 @@ class Player
       coord = to_coord(notation)
       if coord.nil?
         puts 'Invalid notation. Please try again:'
-      elsif piece.available_squares(piece.deltas, board.board, color).include?(coord)
+      elsif piece.available_squares(board.board).include?(coord)
         return coord
       else
         puts 'Illegal move. Please try again:'
