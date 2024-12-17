@@ -30,15 +30,11 @@ class Piece
 
         piece = board[square[0]][square[1]]
 
-        if piece.color == color
-          next if piece.is_a?(Knight)
+        squares << square if piece == '' || piece.color != color
 
-          break
-        end
+        next if piece == '' || piece.is_a?(Knight)
 
-        squares << square
-
-        break if piece.color != color && !piece.is_a?(Knight)
+        break
       end
     end
     squares
