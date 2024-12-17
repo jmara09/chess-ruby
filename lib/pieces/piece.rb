@@ -32,7 +32,7 @@ class Piece
 
         squares << square if piece == '' || piece.color != color
 
-        next if piece == '' || piece.is_a?(Knight)
+        next if piece == '' || is_a?(Knight)
 
         break
       end
