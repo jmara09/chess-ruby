@@ -1,10 +1,11 @@
 require 'colorize'
+require 'yaml'
 
 require_relative 'computer'
 require_relative 'player'
 
 class ChessGame
-  attr_accessor :computer, :current_player, :game_status, :player_one, :player_two
+  attr_reader :chess_board, :computer, :current_player, :game_status, :player_one, :player_two
 
   def initialize
     @chess_board = ChessBoard.new
@@ -48,6 +49,32 @@ class ChessGame
 
       process_game_status
       @current_player = toggle_player(@current_player, @player_one, opponent)
+    end
+  end
+
+  def save_game
+    print 'Name your save file: '
+    name = gets.chomp
+    file_location = "save_files/#{name}.yaml"
+
+    catch(:continue) do
+      if File.exist?(file_location)
+        input = nil
+
+        loop do
+          print "#{name} already exist. Overwrite? [y/n] "
+          input = gets.chomp
+          next unless %w[y n].include?(input)
+
+          throw :continue unless input == 'n'
+
+          save_game
+        end
+      end
+    end
+
+    File.open(file_location, 'w') do |file|
+      file.puts YAML.dump(self)
     end
   end
 
@@ -168,8 +195,8 @@ class ChessGame
     @player_one = Player.new(color, king, pieces)
   end
 
-  def setup_opponent(player_one)
-    opponent_color = player_one == 'white' ? 'black' : 'white'
+  def setup_opponent(player_one_color)
+    opponent_color = player_one_color == 'white' ? 'black' : 'white'
     king = @chess_board.send(:"#{opponent_color}_king")
     pieces = @chess_board.send(:"#{opponent_color}_pieces")
 
@@ -205,4 +232,10 @@ class ChessGame
 end
 
 chess = ChessGame.new
-chess.start
+chess.chess_board.set_pieces
+# chess.player_input
+# chess.setup_opponent(chess.player_one.color)
+# p chess.player_one.color
+# p chess.computer.color
+chess.save_game
+# chess.start
