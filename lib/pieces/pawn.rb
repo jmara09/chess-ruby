@@ -11,15 +11,6 @@ class Pawn < Piece
     @moved = false
   end
 
-  def check_square(delta, current_position, board, color = 'white')
-    result = super
-    diagonal_deltas = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-
-    result = [nil, nil] if diagonal_deltas.include?(delta) && result.first == 'empty'
-
-    result
-  end
-
   def deltas
     steps = moved ? 1 : 2
     black_restrictions = %i[up upper_left upper_right]
@@ -28,5 +19,16 @@ class Pawn < Piece
     deltas = deltas.except(*white_restrictions) if color == 'white'
     deltas = deltas.except(*black_restrictions) if color == 'black'
     deltas
+  end
+
+  def available_squares(board)
+    squares = super
+    diagonal_deltas = color == 'white' ? [[-1, -1], [-1, 1]] : [[1, -1], [1, 1]]
+    diagonal_coord = diagonal_deltas.inject([]) { |arr, delta| arr << [coord[0] + delta[0], coord[1] + delta[1]] }
+
+    squares.reject do |square_coord|
+      square = board[square_coord[0]][square_coord[1]]
+      square == '' && diagonal_coord.include?(square_coord)
+    end
   end
 end
