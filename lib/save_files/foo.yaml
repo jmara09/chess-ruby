@@ -1,0 +1,323 @@
+---
+:chess_board: !ruby/object:ChessBoard
+  board:
+  - - &24 !ruby/object:Rook
+      color: black
+      coord:
+      - 0
+      - 0
+      symbol: "♜"
+    - ''
+    - &26 !ruby/object:Bishop
+      color: black
+      coord:
+      - 0
+      - 2
+      symbol: "♝"
+    - &27 !ruby/object:Queen
+      color: black
+      coord:
+      - 0
+      - 3
+      symbol: "♛"
+    - &28 !ruby/object:King
+      color: black
+      coord:
+      - 0
+      - 4
+      symbol: "♚"
+    - &29 !ruby/object:Bishop
+      color: black
+      coord:
+      - 0
+      - 5
+      symbol: "♝"
+    - &30 !ruby/object:Knight
+      color: black
+      coord:
+      - 0
+      - 6
+      symbol: "♞"
+    - ''
+  - - &17 !ruby/object:Pawn
+      color: black
+      coord:
+      - 1
+      - 0
+      symbol: "♟"
+      moved: false
+    - &18 !ruby/object:Pawn
+      color: black
+      coord:
+      - 1
+      - 1
+      symbol: "♟"
+      moved: false
+    - &19 !ruby/object:Pawn
+      color: black
+      coord:
+      - 1
+      - 2
+      symbol: "♟"
+      moved: false
+    - ''
+    - &20 !ruby/object:Pawn
+      color: black
+      coord:
+      - 1
+      - 4
+      symbol: "♟"
+      moved: false
+    - &21 !ruby/object:Pawn
+      color: black
+      coord:
+      - 1
+      - 5
+      symbol: "♟"
+      moved: false
+    - &22 !ruby/object:Pawn
+      color: black
+      coord:
+      - 1
+      - 6
+      symbol: "♟"
+      moved: false
+    - &31 !ruby/object:Rook
+      color: black
+      coord:
+      - 1
+      - 7
+      symbol: "♜"
+  - - &25 !ruby/object:Knight
+      color: black
+      coord:
+      - 2
+      - 0
+      symbol: "♞"
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - &23 !ruby/object:Pawn
+      color: black
+      coord:
+      - 2
+      - 7
+      symbol: "♟"
+      moved: true
+  - - ''
+    - ''
+    - ''
+    - &9 !ruby/object:Rook
+      color: white
+      coord:
+      - 3
+      - 3
+      symbol: "♖"
+    - ''
+    - ''
+    - ''
+    - ''
+  - - &1 !ruby/object:Pawn
+      color: white
+      coord:
+      - 4
+      - 0
+      symbol: "♙"
+      moved: true
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+  - - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+  - - ''
+    - &2 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 1
+      symbol: "♙"
+      moved: false
+    - &3 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 2
+      symbol: "♙"
+      moved: false
+    - &4 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 3
+      symbol: "♙"
+      moved: false
+    - &5 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 4
+      symbol: "♙"
+      moved: false
+    - &6 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 5
+      symbol: "♙"
+      moved: false
+    - &7 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 6
+      symbol: "♙"
+      moved: false
+    - &8 !ruby/object:Pawn
+      color: white
+      coord:
+      - 6
+      - 7
+      symbol: "♙"
+      moved: false
+  - - ''
+    - &10 !ruby/object:Knight
+      color: white
+      coord:
+      - 7
+      - 1
+      symbol: "♘"
+    - &11 !ruby/object:Bishop
+      color: white
+      coord:
+      - 7
+      - 2
+      symbol: "♗"
+    - &12 !ruby/object:Queen
+      color: white
+      coord:
+      - 7
+      - 3
+      symbol: "♕"
+    - &13 !ruby/object:King
+      color: white
+      coord:
+      - 7
+      - 4
+      symbol: "♔"
+    - &14 !ruby/object:Bishop
+      color: white
+      coord:
+      - 7
+      - 5
+      symbol: "♗"
+    - &15 !ruby/object:Knight
+      color: white
+      coord:
+      - 7
+      - 6
+      symbol: "♘"
+    - &16 !ruby/object:Rook
+      color: white
+      coord:
+      - 7
+      - 7
+      symbol: "♖"
+  white_pieces:
+  - *1
+  - *2
+  - *3
+  - *4
+  - *5
+  - *6
+  - *7
+  - *8
+  - *9
+  - *10
+  - *11
+  - *12
+  - *13
+  - *14
+  - *15
+  - *16
+  black_pieces:
+  - *17
+  - *18
+  - *19
+  - !ruby/object:Pawn
+    color: black
+    coord:
+    symbol: "♟"
+    moved: true
+  - *20
+  - *21
+  - *22
+  - *23
+  - *24
+  - *25
+  - *26
+  - *27
+  - *28
+  - *29
+  - *30
+  - *31
+  white_king: *13
+  black_king: *28
+:computer: &32 !ruby/object:Computer
+  color: black
+  king: *28
+  active_pieces:
+  - *17
+  - *18
+  - *19
+  - *20
+  - *21
+  - *22
+  - *23
+  - *24
+  - *25
+  - *26
+  - *27
+  - *28
+  - *29
+  - *30
+  - *31
+  captured: []
+:current_player: &33 !ruby/object:Player
+  color: white
+  king: *13
+  active_pieces:
+  - *1
+  - *2
+  - *3
+  - *4
+  - *5
+  - *6
+  - *7
+  - *8
+  - *9
+  - *10
+  - *11
+  - *12
+  - *13
+  - *14
+  - *15
+  - *16
+  captured:
+  - "♟"
+:opponent: *32
+:game_status: continue
+:player_one: *33
+:player_two:
