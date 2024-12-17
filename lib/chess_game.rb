@@ -94,6 +94,7 @@ class ChessGame
         col_offset + current_square[1]
       ]
 
+      puts current_square
       paths << current_square
     end
 
@@ -106,7 +107,6 @@ class ChessGame
 
     enemy_king_moves = enemy_king.available_squares(board)
     all_own_moves = own_pieces.flat_map { |piece| piece.available_squares(board) }
-    return true if enemy_king_moves.empty?
 
     enemy_king_safe = enemy_king_moves.any? { |enemy_king_move| !all_own_moves.include?(enemy_king_move) }
     return false if enemy_king_safe
@@ -117,10 +117,14 @@ class ChessGame
 
     return true if attackers.size > 1
 
-    paths = path_to_king(enemy_king.coord, attackers.first.coord)
+    paths = if attackers.first.is_a?(Knight)
+              [attackers.first.coord]
+            else
+              path_to_king(enemy_king.coord, attackers.first.coord)
+            end
 
     all_enemy_moves = enemy_pieces.flat_map do |piece|
-      next if piece.is_a?(King)
+      next [] if piece.is_a?(King)
 
       piece.available_squares(board)
     end
