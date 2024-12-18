@@ -41,5 +41,6 @@ class Computer
     board[piece.coord[0]][piece.coord[1]] = ''
 
     piece.coord = random_coord
+    piece
   end
 end

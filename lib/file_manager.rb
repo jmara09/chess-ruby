@@ -31,6 +31,7 @@ module FileManager
     end
 
     puts 'File saved successfully'
+    sleep(1)
   end
 
   def load_game(object)
@@ -48,10 +49,12 @@ module FileManager
         object.game_status = data[:game_status]
         object.player_one = data[:player_one]
         object.player_two = data[:player_two]
-        puts 'Game loaded successfully!'
+        puts 'Load game successfully'
+        sleep(1)
         true
       rescue StandardError => e
         puts "An error occurred while loading the game: #{e.message}"
+        sleep(1)
       end
     else
       puts 'File does not exist'

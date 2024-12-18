@@ -21,13 +21,7 @@ class ChessGame
   end
 
   def start
-    print 'Load game? [y/n] '
-    input = gets.chomp
-    start unless %w[y n].include?(input)
-
-    if input == 'y'
-      load_game(self)
-    else
+    unless load?
       @chess_board.set_pieces
       player_input
       @opponent = setup_opponent(@player_one.color)
@@ -50,6 +44,16 @@ class ChessGame
 
       @current_player = toggle_player(@current_player, @player_one, @opponent)
     end
+  end
+
+  def load?
+    print 'Load game? [y/n] '
+    input = gets.chomp
+    load? unless %w[y n].include?(input)
+    return false unless input == 'y'
+
+    load_game(self)
+    true
   end
 
   def win?(current_opponent)
