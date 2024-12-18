@@ -68,7 +68,7 @@ class Player
   end
 
   def target_square(piece, board)
-    print 'Type redo to change or the next notation to make a move: '
+    print "'redo' to change or notation to move: "
     notation = gets.chomp
 
     loop do
