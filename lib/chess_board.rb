@@ -73,6 +73,7 @@ class ChessBoard
       row_number -= 1
     end
     'abcdefgh'.chars.each { |chr| print "    #{chr} " }
-    puts
+    puts "\n\n"
+    puts "'s' - save    'q' - exit\n".center(47)
   end
 end

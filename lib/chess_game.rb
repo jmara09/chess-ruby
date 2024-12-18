@@ -156,11 +156,11 @@ class ChessGame
 
   def process_game_status
     case @game_status
-    when 'save'
+    when 's'
       @game_status = 'continue'
       save_game(self)
       'saved'
-    when 'exit'
+    when 'q'
       puts 'Exiting game'
       exit
     end

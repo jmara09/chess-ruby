@@ -50,7 +50,7 @@ module FileManager
         object.player_one = data[:player_one]
         object.player_two = data[:player_two]
         puts 'Load game successfully'
-        sleep(1)
+        # sleep(1)
         true
       rescue StandardError => e
         puts "An error occurred while loading the game: #{e.message}"

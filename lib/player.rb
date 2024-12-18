@@ -34,7 +34,7 @@ class Player
   end
 
   def check_for_save_or_exit(input)
-    return input if %w[save exit].include?(input)
+    return input if %w[s q].include?(input)
 
     nil
   end
