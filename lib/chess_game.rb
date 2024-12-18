@@ -44,23 +44,26 @@ class ChessGame
 
       play_turn(@current_player)
       update_pieces(@player_one, @opponent)
-
-      if current_opponent.king.coord.nil? || opponent_check_mate?(current_opponent.king, @current_player.active_pieces,
-                                                                  current_opponent.active_pieces, @chess_board.board)
-        @chess_board.print_board
-        puts "#{@current_player.color.capitalize.colorize(:blue)} wins!"
-
-        if replay
-          reset
-          start
-        end
-
-        @game_status = 'exit'
-      end
+      win?(current_opponent)
 
       next if process_game_status == 'saved'
 
       @current_player = toggle_player(@current_player, @player_one, @opponent)
+    end
+  end
+
+  def win?(current_opponent)
+    if current_opponent.king.coord.nil? || opponent_check_mate?(current_opponent.king, @current_player.active_pieces,
+                                                                current_opponent.active_pieces, @chess_board.board)
+      @chess_board.print_board
+      puts "#{@current_player.color.capitalize.colorize(:blue)} wins!"
+
+      if replay
+        reset
+        start
+      end
+
+      @game_status = 'exit'
     end
   end
 
@@ -160,20 +163,18 @@ class ChessGame
   end
 
   def choose_color
-    input = nil
     loop do
       print 'Which color of piece would you like to play with? [w/b] '
       input = gets.chomp
       puts
 
-      redo unless %w[w b].include?(input)
+      next unless %w[w b].include?(input)
 
       input = input == 'w' ? 'white' : 'black'
       puts "You will play as #{input.colorize(:blue)}"
       puts
-      break
+      return input
     end
-    input
   end
 
   def player_input
@@ -212,8 +213,8 @@ class ChessGame
     else
       puts 'Computer is thinking..'
       sleep(1)
-      @computer.random_move(@chess_board.board)
-      puts 'Computer makes a move'
+      piece = @computer.random_move(@chess_board.board)
+      puts "Computer moved #{piece.class}"
       sleep(1)
     end
   end
